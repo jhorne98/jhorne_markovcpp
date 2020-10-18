@@ -3,4 +3,4 @@ project(MARKOVCPP)
 
 set(MARKOV_SRC markov.cpp)
 
-add_executable(markov ${MARKOV_SRC})
+add_executable(markov.exe ${MARKOV_SRC})
