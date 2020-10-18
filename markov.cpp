@@ -3,8 +3,6 @@
 #include <set>
 #include <random>
 
-using namespace std;
-
 #define MOVES 100
 #define DEBUG 0 
 
@@ -23,11 +21,11 @@ struct comp {
 // the Node class: n transitions to other nodes
 class Node {
 	public:
-		string name;
-		map<Node*, double> transitions;	
-		set<pair<Node*, double>, comp> organizedTransitions;
+		std::string name;
+		std::map<Node*, double> transitions;	
+		std::set<std::pair<Node*, double>, comp> organizedTransitions;
 
-		Node(string nodeName) {
+		Node(std::string nodeName) {
 			name = nodeName;
 		}
 
@@ -36,14 +34,14 @@ class Node {
 			// can't tell you why this needs to be a float but it works
 			float total = 0.0;
 
-			map<Node*, double>::iterator it;
+			std::map<Node*, double>::iterator it;
 
 			for(it = transitions.begin(); it != transitions.end(); it++) {
-				if (DEBUG) {cout << name << "->" << it->first->name << ":" << it->second << endl;}
+				if (DEBUG) {std::cout << name << "->" << it->first->name << ":" << it->second << std::endl;}
 				total += it->second;
 			}
 
-			if (DEBUG) {cout << total << endl;}
+			if (DEBUG) {std::cout << total << std::endl;}
 			return total == 1.0;
 		}
 };
@@ -52,6 +50,7 @@ class Node {
 int main() {
 	srand(time(NULL));
 
+	// TODO XML map of Nodes to be read in during runtime
 	Node *nodeA = new Node("A");
 	Node *nodeB = new Node("B");
 	Node *nodeC = new Node("C");
@@ -60,9 +59,9 @@ int main() {
 	int nodeMapSize = sizeof(nodeMap)/sizeof(nodeMap[0]);
 
 	// test data
-	nodeA->transitions.insert({nodeA, 0.3});
-	nodeA->transitions.insert({nodeB, 0.3});
-	nodeA->transitions.insert({nodeC, 0.4});
+	nodeA->transitions.insert({nodeA, 0.5});
+	nodeA->transitions.insert({nodeB, 0.2});
+	nodeA->transitions.insert({nodeC, 0.3});
 
 	nodeB->transitions.insert({nodeA, 0.1});
 	nodeB->transitions.insert({nodeB, 0.1});
@@ -73,17 +72,17 @@ int main() {
 	nodeC->transitions.insert({nodeC, 0.3});
 
 	// start at first node in the map
-	Node *current = nodeMap[0];
+	Node *current = nodeMap[1];
 
 	// check transitions and sort
 	for(int i = 0; i < nodeMapSize; i++) { 
 		if(nodeMap[i]->checkTransitions() != 1) {
-			cout << "ERROR: node " << nodeMap[i]->name << "'s transitions do not sum to 1.0." << endl;
+			std::cout << "ERROR: node " << nodeMap[i]->name << "'s transitions do not sum to 1.0." << std::endl;
 			return 1;
 		}
 
 		// sort transitions by value
-		nodeMap[i]->organizedTransitions = set<pair<Node*, double>, comp>(nodeMap[i]->transitions.begin(), nodeMap[i]->transitions.end());
+		nodeMap[i]->organizedTransitions = std::set<std::pair<Node*, double>, comp>(nodeMap[i]->transitions.begin(), nodeMap[i]->transitions.end());
 	}
 
 	// this doesn't work unless >=c++11 so naw
@@ -104,7 +103,7 @@ int main() {
 
 		// I hate floating point
 		double randomDouble = ((double)rand() / (double)RAND_MAX);
-		cout << current->name << ", " << randomDouble << endl;
+		std::cout << current->name << ", " << randomDouble << std::endl;
 
 		for(auto const &pair: current->organizedTransitions) {
 			currentPercent += pair.second;
