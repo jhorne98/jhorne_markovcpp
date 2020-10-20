@@ -6,7 +6,6 @@
 #include <algorithm>
 #include "include/tinyxml2.h"
 
-#define MOVES 50
 #define DEBUG 0 
 
 // the comparison struct: organize by descending
@@ -60,7 +59,10 @@ int main()
 	tinyxml2::XMLElement* nodesXML = nodeDoc.FirstChildElement("nodes");
 	
 	std::vector<Node*> nodeMap;
-	
+
+	int moves = nodeDoc.FirstChildElement("moves")->Int64Text();
+	std::cout << moves << std::endl;
+
 	// load nodes into nodeMap from "nodes.xml"
 	for (tinyxml2::XMLElement* e = nodesXML->FirstChildElement("node");
 			e != NULL;
@@ -115,7 +117,7 @@ int main()
 	float currentPercent;
 
 	// roll and move
-	for(int step = 0; step < MOVES; step++) {
+	for(int step = 0; step < moves; step++) {
 		currentPercent = 0.0;
 
 		// I hate floating point
