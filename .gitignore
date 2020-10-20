@@ -1,6 +1,10 @@
 *.o
 *.exe
 
+*.a
+
+*.swp
+
 # cmake files
 CMakeCache.txt
 CMakeFiles

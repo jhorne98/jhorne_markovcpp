@@ -67,10 +67,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/joel/Projects/jhorne_markovcpp
+CMAKE_SOURCE_DIR = /home/joel/Projects/markovcpp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/joel/Projects/jhorne_markovcpp
+CMAKE_BINARY_DIR = /home/joel/Projects/markovcpp
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -99,9 +99,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/joel/Projects/jhorne_markovcpp/CMakeFiles /home/joel/Projects/jhorne_markovcpp//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/joel/Projects/markovcpp/CMakeFiles /home/joel/Projects/markovcpp//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/joel/Projects/jhorne_markovcpp/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/joel/Projects/markovcpp/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -142,6 +142,46 @@ markov.exe/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/markov.exe.dir/build.make CMakeFiles/markov.exe.dir/build
 .PHONY : markov.exe/fast
 
+#=============================================================================
+# Target rules for targets named tinyxml2
+
+# Build rule for target.
+tinyxml2: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tinyxml2
+.PHONY : tinyxml2
+
+# fast build rule for target.
+tinyxml2/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyxml2.dir/build.make CMakeFiles/tinyxml2.dir/build
+.PHONY : tinyxml2/fast
+
+include/tinyxml2.o: include/tinyxml2.cpp.o
+
+.PHONY : include/tinyxml2.o
+
+# target to build an object file
+include/tinyxml2.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyxml2.dir/build.make CMakeFiles/tinyxml2.dir/include/tinyxml2.cpp.o
+.PHONY : include/tinyxml2.cpp.o
+
+include/tinyxml2.i: include/tinyxml2.cpp.i
+
+.PHONY : include/tinyxml2.i
+
+# target to preprocess a source file
+include/tinyxml2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyxml2.dir/build.make CMakeFiles/tinyxml2.dir/include/tinyxml2.cpp.i
+.PHONY : include/tinyxml2.cpp.i
+
+include/tinyxml2.s: include/tinyxml2.cpp.s
+
+.PHONY : include/tinyxml2.s
+
+# target to generate assembly for a file
+include/tinyxml2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyxml2.dir/build.make CMakeFiles/tinyxml2.dir/include/tinyxml2.cpp.s
+.PHONY : include/tinyxml2.cpp.s
+
 markov.o: markov.cpp.o
 
 .PHONY : markov.o
@@ -178,6 +218,10 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... markov.exe"
+	@echo "... tinyxml2"
+	@echo "... include/tinyxml2.o"
+	@echo "... include/tinyxml2.i"
+	@echo "... include/tinyxml2.s"
 	@echo "... markov.o"
 	@echo "... markov.i"
 	@echo "... markov.s"

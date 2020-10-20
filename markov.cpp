@@ -2,12 +2,16 @@
 #include <map>
 #include <set>
 #include <random>
+#include <vector>
+#include <algorithm>
+#include "include/tinyxml2.h"
 
-#define MOVES 100
+#define MOVES 50
 #define DEBUG 0 
 
 // the comparison struct: organize by descending
-struct comp {
+struct comp
+{
 	template<typename T>
 	bool operator()(const T& l, const T& r) const {
 		if(l.second != r.second) {
@@ -19,7 +23,8 @@ struct comp {
 };
 
 // the Node class: n transitions to other nodes
-class Node {
+class Node 
+{
 	public:
 		std::string name;
 		std::map<Node*, double> transitions;	
@@ -46,36 +51,58 @@ class Node {
 		}
 };
 
-
-int main() {
+int main()
+{
 	srand(time(NULL));
 
-	// TODO XML map of Nodes to be read in during runtime
-	Node *nodeA = new Node("A");
-	Node *nodeB = new Node("B");
-	Node *nodeC = new Node("C");
+	tinyxml2::XMLDocument nodeDoc;
+	nodeDoc.LoadFile("nodes.xml");
+	tinyxml2::XMLElement* nodesXML = nodeDoc.FirstChildElement("nodes");
+	
+	std::vector<Node*> nodeMap;
+	
+	// load nodes into nodeMap from "nodes.xml"
+	for (tinyxml2::XMLElement* e = nodesXML->FirstChildElement("node");
+			e != NULL;
+			e = e->NextSiblingElement("node"))
+	{
+		const char *name = e->FirstChildElement("name")->GetText();
+		Node *temp = new Node(name);
 
-	Node *nodeMap[] = {nodeA, nodeB, nodeC};
-	int nodeMapSize = sizeof(nodeMap)/sizeof(nodeMap[0]);
+		nodeMap.push_back(temp);	
+	}
+	
+	// load transitions and chance for all nodes
+	for (tinyxml2::XMLElement* node = nodesXML->FirstChildElement("node");
+			node != NULL;
+			node = node->NextSiblingElement("node"))
+	{
+		// get the parent node followed by list of transitions
+		std::string parentName = node->FirstChildElement("name")->GetText();
+		auto parentNode = std::find_if(nodeMap.begin(), nodeMap.end(), [&parentName](const Node* obj) {return obj->name == parentName;});
+		
+		for (tinyxml2::XMLElement* transition = node->FirstChild()->NextSiblingElement("transition");
+				transition != NULL;
+				transition = transition->NextSiblingElement("transition"))
+		{
+			// iterate over each transition node
+			std::string toName = transition->FirstChildElement("to")->GetText();
+			auto childNode = std::find_if(nodeMap.begin(), nodeMap.end(), [&toName](const Node* obj) {return obj->name == toName;});
 
-	// test data
-	nodeA->transitions.insert({nodeA, 0.5});
-	nodeA->transitions.insert({nodeB, 0.2});
-	nodeA->transitions.insert({nodeC, 0.3});
+			// add each specified node to transitions
+			parentNode[0]->transitions.insert(
+			{
+				childNode[0],
+				transition->FirstChildElement("chance")->DoubleText()
+			});
+		}
+	}
 
-	nodeB->transitions.insert({nodeA, 0.1});
-	nodeB->transitions.insert({nodeB, 0.1});
-	nodeB->transitions.insert({nodeC, 0.8});
-
-	nodeC->transitions.insert({nodeA, 0.6});
-	nodeC->transitions.insert({nodeB, 0.1});
-	nodeC->transitions.insert({nodeC, 0.3});
-
-	// start at first node in the map
-	Node *current = nodeMap[1];
+	// start at random node
+	Node *current = nodeMap[rand() % nodeMap.size()];
 
 	// check transitions and sort
-	for(int i = 0; i < nodeMapSize; i++) { 
+	for(int i = 0; i < nodeMap.size(); i++) { 
 		if(nodeMap[i]->checkTransitions() != 1) {
 			std::cout << "ERROR: node " << nodeMap[i]->name << "'s transitions do not sum to 1.0." << std::endl;
 			return 1;
@@ -84,17 +111,7 @@ int main() {
 		// sort transitions by value
 		nodeMap[i]->organizedTransitions = std::set<std::pair<Node*, double>, comp>(nodeMap[i]->transitions.begin(), nodeMap[i]->transitions.end());
 	}
-
-	// this doesn't work unless >=c++11 so naw
-	/*
-	// https://stackoverflow.com/questions/2704521/generate-random-double-numbers-in-c
-	double lowerBound = 0;
-	double upperBound = 100;
-	uniform_real_distribution<double> unif(lowerBound,upperBound);
-	default_random_engine re;
-	double randomDouble = unif(re);
-	*/
-
+	
 	float currentPercent;
 
 	// roll and move
@@ -105,6 +122,7 @@ int main() {
 		double randomDouble = ((double)rand() / (double)RAND_MAX);
 		std::cout << current->name << ", " << randomDouble << std::endl;
 
+		// check if each node meets threshold, breaking at find
 		for(auto const &pair: current->organizedTransitions) {
 			currentPercent += pair.second;
 
@@ -117,7 +135,7 @@ int main() {
 		}
 	}
 
-	for(int i = 0; i < nodeMapSize; i++) {
+	for(int i = 0; i < nodeMap.size(); i++) {
 		delete nodeMap[i];
 	}
 
